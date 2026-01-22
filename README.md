@@ -9,14 +9,12 @@ kali-config/
 │   ├── zshrc
 |   └── setup.sh
 │
-├── tmux/
-│   └── tmux.conf
-│
 ├── tools/
 │   ├── install-tools.sh
 |   └── README.md            # List of tools
 │
 ├── config/
+│   └── tmux.conf
 │
 └── files/
     ├── scripts/
