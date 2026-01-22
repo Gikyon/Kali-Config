@@ -1,0 +1,32 @@
+# =========================
+# OH MY ZSH
+# =========================
+export ZSH="$HOME/.oh-my-zsh"
+
+# Disable theme to avoid overriding custom prompt
+ZSH_THEME=""
+
+plugins=(
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+)
+
+source $ZSH/oh-my-zsh.sh
+
+# =========================
+# COLORS
+# =========================
+autoload -Uz colors && colors
+setopt PROMPT_SUBST
+
+# =========================
+# SPACING
+# =========================
+precmd() { echo "" }
+
+# =========================
+# PROMPT
+# =========================
+PROMPT='%(?.%F{green}.%F{red})%Bkali%b%f %B%F{cyan}%D{%H:%M:%S}%f%b %B%F{blue}%~%f%b
+%(?.%F{green}❯%f.%F{red}❯%f) '
