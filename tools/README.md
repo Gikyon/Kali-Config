@@ -12,6 +12,7 @@ Exploits: Common exploits such as Eternal*, SMBGhost, and etc.
 PKINIT: ntlmrelayx and their friends
 GhostPack: pre compiled binaries
 pywhisker: ADCS tools
+BloodyAD: tools for interacting with LDAP in AD environment
 ```
 
 For Linux
@@ -41,6 +42,7 @@ chisel: pivoting
 ligolo: pivoting
 username-anarchy: username generator
 CeWL: wordlist generator
+seclist: pre built wordlist
 ```
 
 Custom
