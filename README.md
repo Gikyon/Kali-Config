@@ -10,7 +10,7 @@ kali-config/
 |   └── setup.sh
 │
 ├── tools/
-│   ├── install-tools.sh
+│   ├── install-tools.py
 |   └── README.md            # List of tools
 │
 ├── config/

@@ -13,6 +13,7 @@ PKINIT: ntlmrelayx and their friends
 GhostPack: pre compiled binaries
 pywhisker: ADCS tools
 BloodyAD: tools for interacting with LDAP in AD environment
+PTH-Toolkit: AD activities using hashes
 ```
 
 For Linux
@@ -43,6 +44,10 @@ ligolo: pivoting
 username-anarchy: username generator
 CeWL: wordlist generator
 seclist: pre built wordlist
+vscode: text editor
+docker: for docker operation
+rlwrap: shell handler
+penelope: shell handler
 ```
 
 Custom
