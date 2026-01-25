@@ -29,12 +29,14 @@ Graph-Runner: Azure pentesting
 For Web:
 ```
 shcheck: check header security.
+wp-plugin: plugin for rce
 ```
 
 pipx:
 ```
 git-dumper: dumps git directories from website.
 uploadserver: host http server for upload and download.
+penelope: shell handler
 ```
 
 Others
@@ -47,10 +49,10 @@ seclist: pre built wordlist
 vscode: text editor
 docker: for docker operation
 rlwrap: shell handler
-penelope: shell handler
+keepassxc: opening kdbx
 ```
 
 Custom
 ```
-
+ms-library generator
 ```
