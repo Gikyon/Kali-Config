@@ -39,12 +39,13 @@ def apt_install(packages: list[str]):
 
 def pipx_install(packages: list[str]):
     """
-    Install Python CLI tools via pipx for all users (including root).
+    Install Python CLI tools via pipx for all users (including root),
+    respecting per-user ownership and permissions.
     """
     if not packages:
         return
 
-    # Ensure pipx exists system-wide
+    # Ensure pipx exists
     if not command_exists("pipx"):
         print("[!] pipx not found, installing...")
         run_cmd(["apt", "install", "-y", "pipx"], require_root=True)
@@ -64,24 +65,23 @@ def pipx_install(packages: list[str]):
     for username, home in users:
         print(f"  └─ User: {username}")
 
-        env = {
-            "HOME": str(home),
-            "PIPX_HOME": f"{home}/.local/share/pipx",
-            "PIPX_BIN_DIR": f"{home}/.local/bin",
-            "PATH": f"{home}/.local/bin:/usr/bin:/bin",
-        }
+        local_dir = home / ".local"
 
-        # Ensure directories exist
-        run_cmd(
-            ["mkdir", "-p", env["PIPX_HOME"], env["PIPX_BIN_DIR"]],
-            require_root=True,
-        )
+        if username != "root":
+            # Ensure ~/.local exists and is owned by the user
+            run_cmd(
+                ["sudo", "-u", username, "mkdir", "-p", str(local_dir)]
+            )
+            run_cmd(
+                ["chown", "-R", f"{username}:{username}", str(local_dir)],
+                require_root=True,
+            )
 
-        # Ensure path is registered
-        run_cmd(
-            ["pipx", "ensurepath"],
-            require_root=(username == "root"),
-        )
+        # Ensure PATH is registered (safe to re-run)
+        if username == "root":
+            run_cmd(["pipx", "ensurepath"])
+        else:
+            run_cmd(["sudo", "-u", username, "pipx", "ensurepath"])
 
         for pkg in packages:
             if username == "root":
@@ -92,6 +92,7 @@ def pipx_install(packages: list[str]):
                 )
 
     print("[+] pipx packages installed for all users")
+
 
 
 def git_clone(repos: dict[str, str]):
