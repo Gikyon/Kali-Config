@@ -44,3 +44,6 @@ if [ -n "$ZSH_VERSION" ]; then
 else
   echo "[*] Restart your terminal or run: zsh"
 fi
+
+echo "[*] moving zshrc file."
+mv "./zshrc" "$HOME/.zshrc"

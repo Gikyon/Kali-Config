@@ -42,7 +42,7 @@ def main():
         "pywhisker" : "https://github.com/ShutdownRepo/pywhisker.git",
         "pth-toolkit" : "https://github.com/byt3bl33d3r/pth-toolkit.git",
         "wp-rce" : "https://github.com/p0dalirius/Wordpress-webshell-plugin.git",
-        
+        "impacket" : "https://github.com/fortra/impacket.git"
     }
 
     wget_files = {
