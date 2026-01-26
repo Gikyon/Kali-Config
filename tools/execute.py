@@ -107,6 +107,6 @@ def install_vscode():
     Install Visual Studio Code.
     """
     print("[*] Installing Visual Studio Code...")
-    run_cmd(["wget", "-qO-", "https://packages.microsoft.com/keys/microsoft.asc", "|", "gpg", "--dearmor", ">", "/usr/share/keyrings/microsoft.gpg"], require_root=True)
-    run_cmd(["sh", "-c", 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'], require_root=True)
+    run_cmd(["wget", "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64", "-O", "vscode/vscode.deb"], require_root=True)
+    run_cmd(["apt", "install", "vscode/vscode.deb"], require_root=True)
     apt_install(["code"])
