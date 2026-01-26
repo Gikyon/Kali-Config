@@ -1,50 +1,76 @@
 #!/bin/sh
-
 set -e
 
-echo "[*] Installing Oh My Zsh..."
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+ZSHRC_SOURCE="$REPO_DIR/zsh/zshrc"
 
-# Install Oh My Zsh if not already installed
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-  RUNZSH=no CHSH=no sh -c     "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-else
-  echo "[*] Oh My Zsh already installed"
-fi
+echo "[*] Starting system-wide zsh configuration..."
 
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+setup_user() {
+  USERNAME="$1"
+  USER_HOME="$2"
 
-echo "[*] Installing zsh plugins..."
+  echo "[*] Configuring zsh for: $USERNAME ($USER_HOME)"
 
-# zsh-autosuggestions
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
-  git clone https://github.com/zsh-users/zsh-autosuggestions     "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
-else
-  echo "[*] zsh-autosuggestions already installed"
-fi
+  USER_ZSH="$USER_HOME/.oh-my-zsh"
+  USER_CUSTOM="$USER_ZSH/custom"
 
-# zsh-syntax-highlighting
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting     "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
-else
-  echo "[*] zsh-syntax-highlighting already installed"
-fi
+  # -------------------------
+  # Install Oh My Zsh
+  # -------------------------
+  if [ ! -d "$USER_ZSH" ]; then
+    echo "  └─ Installing Oh My Zsh"
+    if [ "$USERNAME" = "root" ]; then
+      RUNZSH=no CHSH=no sh -c \
+        "curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+    else
+      sudo -u "$USERNAME" env RUNZSH=no CHSH=no sh -c \
+        "curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+    fi
+  else
+    echo "  └─ Oh My Zsh already installed"
+  fi
 
-echo "[*] Ensuring .zshrc exists..."
+  # -------------------------
+  # Plugins
+  # -------------------------
+  mkdir -p "$USER_CUSTOM/plugins"
 
-# Create .zshrc if missing
-if [ ! -f "$HOME/.zshrc" ]; then
-  cp "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc"
-fi
+  [ -d "$USER_CUSTOM/plugins/zsh-autosuggestions" ] || \
+    git clone https://github.com/zsh-users/zsh-autosuggestions \
+      "$USER_CUSTOM/plugins/zsh-autosuggestions"
 
-echo "[*] Zsh setup complete!"
+  [ -d "$USER_CUSTOM/plugins/zsh-syntax-highlighting" ] || \
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting \
+      "$USER_CUSTOM/plugins/zsh-syntax-highlighting"
 
-echo "[*] Reloading zsh config..."
-if [ -n "$ZSH_VERSION" ]; then
-  . "$HOME/.zshrc"
-else
-  echo "[*] Restart your terminal or run: zsh"
-fi
+  # -------------------------
+  # zshrc
+  # -------------------------
+  cp "$ZSHRC_SOURCE" "$USER_HOME/.zshrc"
 
-echo "[*] moving zshrc file."
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cp "$ROOT_DIR/zsh/setup-zsh.sh" "$HOME/.zshrc"
+  # -------------------------
+  # Ownership
+  # -------------------------
+  chown -R "$USERNAME:$USERNAME" "$USER_HOME/.oh-my-zsh" "$USER_HOME/.zshrc"
+
+  echo "  └─ Done"
+}
+
+# -------------------------
+# Normal users
+# -------------------------
+for USER_HOME in /home/*; do
+  [ -d "$USER_HOME" ] || continue
+  USERNAME="$(basename "$USER_HOME")"
+  id "$USERNAME" >/dev/null 2>&1 || continue
+  setup_user "$USERNAME" "$USER_HOME"
+done
+
+# -------------------------
+# Root
+# -------------------------
+setup_user "root" "/root"
+
+echo "[✔] Zsh configured for all users (including root)"
+echo "Log out and back in, or run: zsh"
