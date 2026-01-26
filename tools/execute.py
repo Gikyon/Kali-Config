@@ -53,7 +53,7 @@ def pipx_install(packages: list[str]):
         run_cmd(["pipx", "install", pkg])
 
 
-def git_clone(repos: dict[str, str], base_dir: str = "~/tools"):
+def git_clone(repos: dict[str, str]):
     """
     Clone GitHub repositories.
 
@@ -74,3 +74,28 @@ def git_clone(repos: dict[str, str], base_dir: str = "~/tools"):
             continue
 
         run_cmd(["git", "clone", url, str(dest)])
+
+def wget_download(files: dict[str, str], base_dir: str = "/opt"):
+    """
+    Download files using wget into their own directories.
+
+    files = {
+        "tool-name": "https://example.com/file"
+    }
+    """
+    base_path = Path(base_dir)
+    base_path.mkdir(parents=True, exist_ok=True)
+
+    print(f"[*] Downloading files into {base_path}")
+
+    for name, url in files.items():
+        tool_dir = base_path / name
+        tool_dir.mkdir(parents=True, exist_ok=True)
+
+        filename = url.split("/")[-1]
+        output_file = tool_dir / filename
+
+        print(f"[+] Downloading {name} -> {output_file}")
+
+        cmd = ["wget", "-O", str(output_file), url]
+        run_cmd(cmd)

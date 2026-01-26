@@ -12,7 +12,6 @@ Exploits: Common exploits such as Eternal*, SMBGhost, and etc.
 PKINIT: ntlmrelayx and their friends
 GhostPack: pre compiled binaries
 pywhisker: ADCS tools
-BloodyAD: tools for interacting with LDAP in AD environment
 PTH-Toolkit: AD activities using hashes
 ```
 
@@ -37,6 +36,7 @@ pipx:
 git-dumper: dumps git directories from website.
 uploadserver: host http server for upload and download.
 penelope: shell handler
+BloodyAD: tools for interacting with LDAP in AD environment
 ```
 
 Others
