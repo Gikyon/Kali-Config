@@ -39,19 +39,60 @@ def apt_install(packages: list[str]):
 
 def pipx_install(packages: list[str]):
     """
-    Install Python CLI tools via pipx.
+    Install Python CLI tools via pipx for all users (including root).
     """
     if not packages:
         return
 
+    # Ensure pipx exists system-wide
     if not command_exists("pipx"):
         print("[!] pipx not found, installing...")
         run_cmd(["apt", "install", "-y", "pipx"], require_root=True)
-        run_cmd(["pipx", "ensurepath"])
 
-    print("[*] Installing via pipx...")
-    for pkg in packages:
-        run_cmd(["pipx", "install", pkg])
+    users = []
+
+    # Normal users
+    for home in Path("/home").iterdir():
+        if home.is_dir():
+            users.append((home.name, home))
+
+    # Root
+    users.append(("root", Path("/root")))
+
+    print("[*] Installing pipx packages for all users...")
+
+    for username, home in users:
+        print(f"  └─ User: {username}")
+
+        env = {
+            "HOME": str(home),
+            "PIPX_HOME": f"{home}/.local/share/pipx",
+            "PIPX_BIN_DIR": f"{home}/.local/bin",
+            "PATH": f"{home}/.local/bin:/usr/bin:/bin",
+        }
+
+        # Ensure directories exist
+        run_cmd(
+            ["mkdir", "-p", env["PIPX_HOME"], env["PIPX_BIN_DIR"]],
+            require_root=True,
+        )
+
+        # Ensure path is registered
+        run_cmd(
+            ["pipx", "ensurepath"],
+            require_root=(username == "root"),
+        )
+
+        for pkg in packages:
+            if username == "root":
+                run_cmd(["pipx", "install", "--force", pkg])
+            else:
+                run_cmd(
+                    ["sudo", "-u", username, "pipx", "install", "--force", pkg]
+                )
+
+    print("[+] pipx packages installed for all users")
+
 
 def git_clone(repos: dict[str, str]):
     """
