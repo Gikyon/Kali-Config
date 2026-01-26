@@ -121,7 +121,7 @@ def install_vscode():
     ], require_root=True)
 
     # Install the .deb properly
-    run_cmd(["apt", "install", "-y", f"./{vscode_deb}"], require_root=True)
+    run_cmd(["apt", "install", "-y", f"{vscode_deb}"], require_root=True)
 
     # Fix any missing deps just in case
     run_cmd(["apt", "-f", "install", "-y"], require_root=True)
