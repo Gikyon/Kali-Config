@@ -2,7 +2,7 @@
 set -e
 
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
-ZSHRC_SOURCE="$REPO_DIR/zsh/zshrc"
+ZSHRC_SOURCE="$REPO_DIR/zshrc"
 
 echo "[*] Starting system-wide zsh configuration..."
 
