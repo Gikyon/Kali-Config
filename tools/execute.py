@@ -17,7 +17,6 @@ def run_cmd(cmd: list[str], require_root: bool = False):
     print(f"[+] Running: {' '.join(cmd)}")
     subprocess.run(cmd, check=True)
 
-
 def command_exists(cmd: str) -> bool:
     return shutil.which(cmd) is not None
 
@@ -53,7 +52,6 @@ def pipx_install(packages: list[str]):
     print("[*] Installing via pipx...")
     for pkg in packages:
         run_cmd(["pipx", "install", pkg])
-
 
 def git_clone(repos: dict[str, str]):
     """
@@ -101,3 +99,31 @@ def wget_download(files: dict[str, str], base_dir: str = "/opt"):
 
         cmd = ["wget", "-O", str(output_file), url]
         run_cmd(cmd)
+
+# ---------- more complex tools ----------
+
+def install_keepass():
+    print("[*] Installing KeePassXC (Flatpak user install)...")
+
+    run_cmd([
+        "flatpak", "remote-add",
+        "--if-not-exists",
+        "flathub",
+        "https://dl.flathub.org/repo/flathub.flatpakrepo"
+    ])
+
+    run_cmd([
+        "flatpak", "install", "-y",
+        "--user",
+        "flathub",
+        "org.keepassxc.KeePassXC"
+    ])
+
+def install_vscode():
+    """
+    Install Visual Studio Code.
+    """
+    print("[*] Installing Visual Studio Code...")
+    run_cmd(["wget", "-qO-", "https://packages.microsoft.com/keys/microsoft.asc", "|", "gpg", "--dearmor", ">", "/usr/share/keyrings/microsoft.gpg"], require_root=True)
+    run_cmd(["sh", "-c", 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'], require_root=True)
+    apt_install(["code"])

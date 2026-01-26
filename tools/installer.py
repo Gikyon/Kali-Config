@@ -53,6 +53,8 @@ def main():
     execute.pipx_install(pipx_packages)
     execute.git_clone(git_repos)
     execute.wget_download(wget_files)
+    execute.install_keepass()
+    execute.install_vscode()
 
 
 if __name__ == "__main__":
