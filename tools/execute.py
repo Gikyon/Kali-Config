@@ -110,8 +110,6 @@ def pipx_install(packages: list[str]):
 
     print("[+] pipx packages installed successfully for all users")
 
-
-
 def git_clone(repos: dict[str, str]):
     """
     Clone GitHub repositories.
