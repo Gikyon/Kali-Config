@@ -46,4 +46,5 @@ else
 fi
 
 echo "[*] moving zshrc file."
-cp "./zshrc" "$HOME/.zshrc"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cp "$ROOT_DIR/zsh/setup-zsh.sh" "$HOME/.zshrc"
