@@ -102,23 +102,6 @@ def wget_download(files: dict[str, str], base_dir: str = "/opt"):
 
 # ---------- more complex tools ----------
 
-def install_keepass():
-    print("[*] Installing KeePassXC (Flatpak user install)...")
-
-    run_cmd([
-        "flatpak", "remote-add",
-        "--if-not-exists",
-        "flathub",
-        "https://dl.flathub.org/repo/flathub.flatpakrepo"
-    ])
-
-    run_cmd([
-        "flatpak", "install", "-y",
-        "--user",
-        "flathub",
-        "org.keepassxc.KeePassXC"
-    ])
-
 def install_vscode():
     """
     Install Visual Studio Code.

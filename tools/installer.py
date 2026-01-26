@@ -42,7 +42,8 @@ def main():
         "pywhisker" : "https://github.com/ShutdownRepo/pywhisker.git",
         "pth-toolkit" : "https://github.com/byt3bl33d3r/pth-toolkit.git",
         "wp-rce" : "https://github.com/p0dalirius/Wordpress-webshell-plugin.git",
-        "impacket" : "https://github.com/fortra/impacket.git"
+        "impacket" : "https://github.com/fortra/impacket.git",
+        "keepassxc" : "https://github.com/keepassxreboot/keepassxc/releases/download/2.7.11/KeePassXC-2.7.11-1-x86_64.AppImage"
     }
 
     wget_files = {
