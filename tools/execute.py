@@ -39,19 +39,73 @@ def apt_install(packages: list[str]):
 
 def pipx_install(packages: list[str]):
     """
-    Install Python CLI tools via pipx.
+    Install pipx packages for all users (including root),
+    with full ownership healing and pinned Python.
     """
     if not packages:
         return
 
-    if not command_exists("pipx"):
-        print("[!] pipx not found, installing...")
-        run_cmd(["apt", "install", "-y", "pipx"], require_root=True)
-        run_cmd(["pipx", "ensurepath"])
+    PYTHON_BIN = "/usr/bin/python3.11"
 
-    print("[*] Installing via pipx...")
-    for pkg in packages:
-        run_cmd(["pipx", "install", pkg])
+    # Ensure system deps
+    run_cmd(
+        ["apt", "install", "-y", "pipx", "python3.11", "python3.11-venv"],
+        require_root=True,
+    )
+
+    users: list[tuple[str, Path]] = []
+
+    for home in Path("/home").iterdir():
+        if home.is_dir():
+            users.append((home.name, home))
+
+    users.append(("root", Path("/root")))
+
+    print("[*] Installing pipx packages for all users...")
+
+    for username, home in users:
+        print(f"  └─ User: {username}")
+
+        local_dir = home / ".local"
+        pipx_base = local_dir / "share" / "pipx"
+
+        # -------------------------
+        # HARD OWNERSHIP HEAL
+        # -------------------------
+        if username != "root":
+            # Create full tree as root
+            run_cmd(
+                ["mkdir", "-p", str(pipx_base)],
+                require_root=True,
+            )
+
+            # Fix ownership of EVERYTHING under ~/.local
+            run_cmd(
+                ["chown", "-R", f"{username}:{username}", str(local_dir)],
+                require_root=True,
+            )
+
+        # -------------------------
+        # Install packages (fresh venvs)
+        # -------------------------
+        for pkg in packages:
+            uninstall = ["pipx", "uninstall", pkg]
+            install = [
+                "pipx",
+                "install",
+                "--python",
+                PYTHON_BIN,
+                pkg,
+            ]
+
+            if username == "root":
+                run_cmd(uninstall, check=False)
+                run_cmd(install)
+            else:
+                run_cmd(["sudo", "-u", username] + uninstall, check=False)
+                run_cmd(["sudo", "-u", username] + install)
+
+    print("[+] pipx packages installed successfully")
 
 
 def git_clone(repos: dict[str, str]):
