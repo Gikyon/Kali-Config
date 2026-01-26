@@ -17,8 +17,9 @@ def main():
         "seclists",
         "docker.io",
         "rlwrap",
-        "keepassxc",
-        "code"
+        "pipx"
+#        "keepassxc",
+#        "code"
     ]
 
     pipx_packages = [
