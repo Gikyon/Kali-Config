@@ -14,8 +14,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "[*] Working directory: $ROOT_DIR"
 
 # ─── Permissions ───────────────────────────────────────────────────────────────
-chmod +x "$ROOT_DIR/setup-zsh.sh"
-chmod +x "$ROOT_DIR/installer.py"
+chmod +x "$ROOT_DIR/zsh/setup-zsh.sh"
+chmod +x "$ROOT_DIR/tools/installer.py"
 
 # ─── ZSH setup ────────────────────────────────────────────────────────────────
 echo "[*] Running ZSH setup"
