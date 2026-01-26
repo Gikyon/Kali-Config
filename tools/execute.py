@@ -40,12 +40,21 @@ def apt_install(packages: list[str]):
 def pipx_install(packages: list[str]):
     """
     Install Python CLI tools via pipx for all users (including root),
-    respecting per-user ownership and permissions.
+    with per-tool Python version pinning for compatibility.
     """
     if not packages:
         return
 
-    # Ensure pipx exists
+    # ---- Python version pinning (CRITICAL for Kali) ----
+    PIPX_PYTHON_MAP = {
+        "penelope": "python3.11",
+        "bloodyad": "python3.11",
+        # add more broken-on-3.12+ tools here
+    }
+
+    DEFAULT_PYTHON = "python3.11"
+
+    # ---- Ensure pipx exists ----
     if not command_exists("pipx"):
         print("[!] pipx not found, installing...")
         run_cmd(["apt", "install", "-y", "pipx"], require_root=True)
@@ -67,31 +76,39 @@ def pipx_install(packages: list[str]):
 
         local_dir = home / ".local"
 
+        # ---- Ensure ~/.local exists and is owned correctly ----
         if username != "root":
-            # Ensure ~/.local exists and is owned by the user
-            run_cmd(
-                ["sudo", "-u", username, "mkdir", "-p", str(local_dir)]
-            )
+            run_cmd(["sudo", "-u", username, "mkdir", "-p", str(local_dir)])
             run_cmd(
                 ["chown", "-R", f"{username}:{username}", str(local_dir)],
                 require_root=True,
             )
 
-        # Ensure PATH is registered (safe to re-run)
+        # ---- Ensure pipx PATH ----
         if username == "root":
             run_cmd(["pipx", "ensurepath"])
         else:
             run_cmd(["sudo", "-u", username, "pipx", "ensurepath"])
 
+        # ---- Install packages ----
         for pkg in packages:
-            if username == "root":
-                run_cmd(["pipx", "install", "--force", pkg])
-            else:
-                run_cmd(
-                    ["sudo", "-u", username, "pipx", "install", "--force", pkg]
-                )
+            python_bin = PIPX_PYTHON_MAP.get(pkg, DEFAULT_PYTHON)
 
-    print("[+] pipx packages installed for all users")
+            cmd = [
+                "pipx",
+                "install",
+                "--force",
+                "--python",
+                python_bin,
+                pkg,
+            ]
+
+            if username == "root":
+                run_cmd(cmd)
+            else:
+                run_cmd(["sudo", "-u", username] + cmd)
+
+    print("[+] pipx packages installed successfully for all users")
 
 
 
