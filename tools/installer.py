@@ -24,7 +24,7 @@ def main():
     pipx_packages = [
         "git-dumper",
         "uploadserver",
-        "penelope",
+        "penelope-shell-handler",
         "bloodyAD"
     ]
 
