@@ -22,3 +22,10 @@ kali-config/
     └── templates/
 
 ```
+
+Usage:
+```
+git clone https://github.com/Gikyon/Kali-Config
+chmod +x Kali-Config/bootstrap.sh
+./Kali-Config/bootstrap.sh
+```
