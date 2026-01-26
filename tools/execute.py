@@ -104,30 +104,27 @@ def wget_download(files: dict[str, str], base_dir: str = "/opt"):
 
 def install_vscode():
     """
-    Install Visual Studio Code via official apt repo.
+    Install Visual Studio Code.
     """
     print("[*] Installing Visual Studio Code...")
 
+    vscode_dir = "/opt/vscode"
+    vscode_deb = f"{vscode_dir}/vscode.deb"
+
+    run_cmd(["mkdir", "-p", vscode_dir], require_root=True)
+
     run_cmd([
         "wget",
-        "-qO-",
-        "https://packages.microsoft.com/keys/microsoft.asc",
-        "|",
-        "gpg",
-        "--dearmor",
-        "-o",
-        "/usr/share/keyrings/microsoft.gpg"
+        "-O",
+        vscode_deb,
+        "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
     ], require_root=True)
 
-    run_cmd([
-        "sh",
-        "-c",
-        'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] '
-        'https://packages.microsoft.com/repos/code stable main" '
-        '> /etc/apt/sources.list.d/vscode.list'
-    ], require_root=True)
+    # Install the .deb properly
+    run_cmd(["apt", "install", "-y", f"./{vscode_deb}"], require_root=True)
 
-    run_cmd(["apt", "update"], require_root=True)
-    run_cmd(["apt", "install", "-y", "code"], require_root=True)
+    # Fix any missing deps just in case
+    run_cmd(["apt", "-f", "install", "-y"], require_root=True)
 
     print("[+] Visual Studio Code installed")
+
