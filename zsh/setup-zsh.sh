@@ -46,4 +46,4 @@ else
 fi
 
 echo "[*] moving zshrc file."
-mv "./zshrc" "$HOME/.zshrc"
+cp "./zshrc" "$HOME/.zshrc"
