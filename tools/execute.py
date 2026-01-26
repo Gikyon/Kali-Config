@@ -37,23 +37,34 @@ def apt_install(packages: list[str]):
         print(f"[!] Error installing packages via apt: {e}")
         sys.exit(1)
 
+
 def pipx_install(packages: list[str]):
     """
-    Install pipx packages for all users (including root),
-    with full ownership healing and pinned Python.
+    Install Python CLI tools via pipx for all users (including root),
+    with strict Python version pinning and venv recreation.
     """
     if not packages:
         return
 
-    PYTHON_BIN = "/usr/bin/python3.11"
+    # ---- Python pinning (CRITICAL) ----
+    PIPX_PYTHON_MAP = {
+        "penelope": "python3.11",
+        "bloodyad": "python3.11",
+    }
 
-    # Ensure system deps
+    DEFAULT_PYTHON = "python3.11"
+
+    # ---- Ensure dependencies ----
+    if not command_exists("pipx"):
+        run_cmd(["apt", "install", "-y", "pipx"], require_root=True)
+
+    # Ensure compatible Python exists
     run_cmd(
-        ["apt", "install", "-y", "pipx", "python3.11", "python3.11-venv"],
+        ["apt", "install", "-y", "python3.11", "python3.11-venv"],
         require_root=True,
     )
 
-    users: list[tuple[str, Path]] = []
+    users = []
 
     for home in Path("/home").iterdir():
         if home.is_dir():
@@ -61,51 +72,39 @@ def pipx_install(packages: list[str]):
 
     users.append(("root", Path("/root")))
 
-    print("[*] Installing pipx packages for all users...")
+    print("[*] Installing pipx packages (fresh venvs, pinned Python)...")
 
     for username, home in users:
         print(f"  └─ User: {username}")
 
-        local_dir = home / ".local"
-        pipx_base = local_dir / "share" / "pipx"
-
-        # -------------------------
-        # HARD OWNERSHIP HEAL
-        # -------------------------
         if username != "root":
-            # Create full tree as root
+            run_cmd(["sudo", "-u", username, "mkdir", "-p", f"{home}/.local"])
             run_cmd(
-                ["mkdir", "-p", str(pipx_base)],
+                ["chown", "-R", f"{username}:{username}", f"{home}/.local"],
                 require_root=True,
             )
 
-            # Fix ownership of EVERYTHING under ~/.local
-            run_cmd(
-                ["chown", "-R", f"{username}:{username}", str(local_dir)],
-                require_root=True,
-            )
-
-        # -------------------------
-        # Install packages (fresh venvs)
-        # -------------------------
         for pkg in packages:
-            uninstall = ["pipx", "uninstall", pkg]
-            install = [
+            python_bin = PIPX_PYTHON_MAP.get(pkg, DEFAULT_PYTHON)
+
+            uninstall_cmd = ["pipx", "uninstall", pkg]
+            install_cmd = [
                 "pipx",
                 "install",
                 "--python",
-                PYTHON_BIN,
+                python_bin,
                 pkg,
             ]
 
             if username == "root":
-                run_cmd(uninstall, check=False)
-                run_cmd(install)
+                # Ignore uninstall failures
+                run_cmd(uninstall_cmd, check=False)
+                run_cmd(install_cmd)
             else:
-                run_cmd(["sudo", "-u", username] + uninstall, check=False)
-                run_cmd(["sudo", "-u", username] + install)
+                run_cmd(["sudo", "-u", username] + uninstall_cmd, check=False)
+                run_cmd(["sudo", "-u", username] + install_cmd)
 
-    print("[+] pipx packages installed successfully")
+    print("[+] pipx packages installed with correct Python versions")
 
 
 def git_clone(repos: dict[str, str]):
