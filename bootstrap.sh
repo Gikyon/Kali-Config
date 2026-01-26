@@ -19,10 +19,10 @@ chmod +x "$ROOT_DIR/installer.py"
 
 # ─── ZSH setup ────────────────────────────────────────────────────────────────
 echo "[*] Running ZSH setup"
-"$ROOT_DIR/setup-zsh.sh"
+"$ROOT_DIR/zsh/setup-zsh.sh"
 
 # ─── Tool installation ─────────────────────────────────────────────────────────
 echo "[*] Running tool installer"
-python3 "$ROOT_DIR/installer.py"
+python3 "$ROOT_DIR/tools/installer.py"
 
 echo "[✓] Bootstrap complete. Restart your terminal."
