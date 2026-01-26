@@ -10,7 +10,6 @@ import execute
 
 def main():
     apt_packages = [
-        "impacket",
         "bloodhound",
         "pspy",
         "cewl",
