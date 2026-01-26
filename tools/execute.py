@@ -37,8 +37,6 @@ def apt_install(packages: list[str]):
         print(f"[!] Error installing packages via apt: {e}")
         sys.exit(1)
 
-from pathlib import Path
-
 def pipx_install(packages: list[str]):
     """
     Install Python CLI tools via pipx for all users (including root),
@@ -106,7 +104,6 @@ def pipx_install(packages: list[str]):
                 run_cmd(["sudo", "-u", username] + install_cmd)
 
     print("[+] pipx packages installed with correct Python versions")
-
 
 def git_clone(repos: dict[str, str]):
     """
