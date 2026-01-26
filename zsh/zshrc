@@ -28,5 +28,5 @@ precmd() { echo "" }
 # =========================
 # PROMPT
 # =========================
-PROMPT='%(?.%F{green}.%F{red})%Bkali%b%f %B%F{cyan}%D{%H:%M:%S}%f%b %B%F{blue}%~%f%b
+PROMPT='%(?.%F{green}.%F{red})%B$(whoami)%b%f %B%F{cyan}%D{%H:%M:%S}%f%b %B%F{blue}%~%f%b
 %(?.%F{green}❯%f.%F{red}❯%f) '
