@@ -66,4 +66,35 @@ setup_user() {
 
   # -------------------------
   # zshrc
-  # ---
+  # -------------------------
+  cp "$ZSHRC_SOURCE" "$USER_HOME/.zshrc"
+
+  # -------------------------
+  # Ownership (non-root only)
+  # -------------------------
+  if [ "$USERNAME" != "root" ]; then
+    chown -R "$USERNAME:$USERNAME" \
+      "$USER_HOME/.oh-my-zsh" \
+      "$USER_HOME/.zshrc"
+  fi
+
+  echo "  └─ Done"
+}
+
+# -------------------------
+# Normal users
+# -------------------------
+for USER_HOME in /home/*; do
+  [ -d "$USER_HOME" ] || continue
+  USERNAME="$(basename "$USER_HOME")"
+  id "$USERNAME" >/dev/null 2>&1 || continue
+  setup_user "$USERNAME" "$USER_HOME"
+done
+
+# -------------------------
+# Root
+# -------------------------
+setup_user "root" "/root"
+
+echo "[✔] Zsh configured for all users (including root)"
+echo "Log out and back in, or run: zsh"
