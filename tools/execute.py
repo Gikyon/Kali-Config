@@ -37,8 +37,6 @@ def apt_install(packages: list[str]):
         print(f"[!] Error installing packages via apt: {e}")
         sys.exit(1)
 
-from pathlib import Path
-
 def pipx_install(packages: list[str]):
     """
     Install pipx packages for all users (including root),
