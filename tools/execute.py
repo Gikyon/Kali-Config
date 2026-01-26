@@ -30,11 +30,13 @@ def apt_install(packages: list[str]):
     """
     if not packages:
         return
-
-    print("[*] Installing via apt...")
-    run_cmd(["apt", "update"], require_root=True)
-    run_cmd(["apt", "install", "-y", *packages], require_root=True)
-
+    try:
+        print("[*] Installing via apt...")
+        run_cmd(["apt", "update"], require_root=True)
+        run_cmd(["apt", "install", "-y", *packages], require_root=True)
+    except subprocess.CalledProcessError as e:
+        print(f"[!] Error installing packages via apt: {e}")
+        sys.exit(1)
 
 def pipx_install(packages: list[str]):
     """
