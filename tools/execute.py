@@ -37,78 +37,76 @@ def apt_install(packages: list[str]):
         print(f"[!] Error installing packages via apt: {e}")
         sys.exit(1)
 
+from pathlib import Path
+
 def pipx_install(packages: list[str]):
     """
     Install Python CLI tools via pipx for all users (including root),
-    with per-tool Python version pinning for compatibility.
+    with strict Python version pinning and venv recreation.
     """
     if not packages:
         return
 
-    # ---- Python version pinning (CRITICAL for Kali) ----
+    # ---- Python pinning (CRITICAL) ----
     PIPX_PYTHON_MAP = {
         "penelope": "python3.11",
         "bloodyad": "python3.11",
-        # add more broken-on-3.12+ tools here
     }
 
     DEFAULT_PYTHON = "python3.11"
 
-    # ---- Ensure pipx exists ----
+    # ---- Ensure dependencies ----
     if not command_exists("pipx"):
-        print("[!] pipx not found, installing...")
         run_cmd(["apt", "install", "-y", "pipx"], require_root=True)
+
+    # Ensure compatible Python exists
+    run_cmd(
+        ["apt", "install", "-y", "python3.11", "python3.11-venv"],
+        require_root=True,
+    )
 
     users = []
 
-    # Normal users
     for home in Path("/home").iterdir():
         if home.is_dir():
             users.append((home.name, home))
 
-    # Root
     users.append(("root", Path("/root")))
 
-    print("[*] Installing pipx packages for all users...")
+    print("[*] Installing pipx packages (fresh venvs, pinned Python)...")
 
     for username, home in users:
         print(f"  └─ User: {username}")
 
-        local_dir = home / ".local"
-
-        # ---- Ensure ~/.local exists and is owned correctly ----
         if username != "root":
-            run_cmd(["sudo", "-u", username, "mkdir", "-p", str(local_dir)])
+            run_cmd(["sudo", "-u", username, "mkdir", "-p", f"{home}/.local"])
             run_cmd(
-                ["chown", "-R", f"{username}:{username}", str(local_dir)],
+                ["chown", "-R", f"{username}:{username}", f"{home}/.local"],
                 require_root=True,
             )
 
-        # ---- Ensure pipx PATH ----
-        if username == "root":
-            run_cmd(["pipx", "ensurepath"])
-        else:
-            run_cmd(["sudo", "-u", username, "pipx", "ensurepath"])
-
-        # ---- Install packages ----
         for pkg in packages:
             python_bin = PIPX_PYTHON_MAP.get(pkg, DEFAULT_PYTHON)
 
-            cmd = [
+            uninstall_cmd = ["pipx", "uninstall", pkg]
+            install_cmd = [
                 "pipx",
                 "install",
-                "--force",
                 "--python",
                 python_bin,
                 pkg,
             ]
 
             if username == "root":
-                run_cmd(cmd)
+                # Ignore uninstall failures
+                run_cmd(uninstall_cmd, check=False)
+                run_cmd(install_cmd)
             else:
-                run_cmd(["sudo", "-u", username] + cmd)
+                run_cmd(["sudo", "-u", username] + uninstall_cmd, check=False)
+                run_cmd(["sudo", "-u", username] + install_cmd)
 
-    print("[+] pipx packages installed successfully for all users")
+    print("[+] pipx packages installed with correct Python versions")
+
 
 def git_clone(repos: dict[str, str]):
     """
