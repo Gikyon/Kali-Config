@@ -43,11 +43,11 @@ def main():
         "pth-toolkit" : "https://github.com/byt3bl33d3r/pth-toolkit.git",
         "wp-rce" : "https://github.com/p0dalirius/Wordpress-webshell-plugin.git",
         "impacket" : "https://github.com/fortra/impacket.git",
-        "keepassxc" : "https://github.com/keepassxreboot/keepassxc/releases/download/2.7.11/KeePassXC-2.7.11-1-x86_64.AppImage"
     }
 
     wget_files = {
-        "pspy64": "https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy64"
+        "pspy64": "https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy64",
+        "keepassxc" : "https://github.com/keepassxreboot/keepassxc/releases/download/2.7.11/KeePassXC-2.7.11-1-x86_64.AppImage"
     }
 
     execute.apt_install(apt_packages)
