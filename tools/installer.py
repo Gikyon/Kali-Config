@@ -17,8 +17,6 @@ def main():
         "docker.io",
         "rlwrap",
         "pipx"
-#        "keepassxc",
-#        "code"
     ]
 
     pipx_packages = [
@@ -43,6 +41,7 @@ def main():
         "pth-toolkit" : "https://github.com/byt3bl33d3r/pth-toolkit.git",
         "wp-rce" : "https://github.com/p0dalirius/Wordpress-webshell-plugin.git",
         "impacket" : "https://github.com/fortra/impacket.git",
+        "OneListForAll" : "https://github.com/six2dez/OneListForAll"
     }
 
     wget_files = {
