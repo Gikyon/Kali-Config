@@ -56,3 +56,8 @@ Custom
 ```
 ms-library generator
 ```
+
+Need to add
+```
+https://github.com/jakobfriedl/precompiled-binaries
+```
